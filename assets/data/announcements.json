@@ -1,0 +1,16 @@
+[
+    {
+        "id": "1",
+        "title": "Semana de Oración",
+        "date": "2023-11-15",
+        "description": "Te invitamos a nuestra semana de oración especial con el Pr. Juan Pérez. No faltes.",
+        "imageUrl": null
+    },
+    {
+        "id": "2",
+        "title": "Recolección de Alimentos",
+        "date": "2023-11-20",
+        "description": "Estaremos recolectando alimentos no perecederos para las familias necesitadas de la comunidad.",
+        "imageUrl": null
+    }
+]

@@ -1,0 +1,61 @@
+name: radio_nueva_esperanza
+description: Una aplicación de radio para la Iglesia Adventista Nueva Esperanza.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # State Management
+  provider: ^6.1.1
+  
+  # Audio
+  just_audio: ^0.9.36
+  audio_service: ^0.18.12
+  
+  # UI/Utilities
+  google_fonts: ^6.1.0
+  intl: ^0.19.0
+  url_launcher: ^6.2.0
+  share_plus: ^7.2.1
+  cached_network_image: ^3.3.0
+  
+  # Icons
+  cupertino_icons: ^1.0.6
+
+  # Firebase (Admin Dashboard)
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.1
+  cloud_firestore: ^5.4.2
+  firebase_storage: ^12.3.2
+  
+  # Admin Dashboard UI
+  fl_chart: ^0.66.0
+  sidebarx: ^0.17.1
+  uuid: ^4.5.2
+  shared_preferences: ^2.5.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#142F30"
+  adaptive_icon_foreground: "assets/icon/app_icon.png"
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/image/
+    - assets/data/
+    - assets/icon/

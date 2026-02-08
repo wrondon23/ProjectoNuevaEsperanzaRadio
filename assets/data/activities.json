@@ -1,0 +1,16 @@
+[
+    {
+        "id": "1",
+        "title": "Culto Joven",
+        "date": "2023-11-18T16:00:00",
+        "location": "Templo Principal",
+        "description": "Un programa especial preparado por los jóvenes de la iglesia."
+    },
+    {
+        "id": "2",
+        "title": "Escuela Sabática",
+        "date": "2023-11-19T09:00:00",
+        "location": "Aulas",
+        "description": "Estudio de la lección semanal."
+    }
+]

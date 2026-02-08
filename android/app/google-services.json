@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "788316630070",
+    "project_id": "radio-nueva-esperanza-app",
+    "storage_bucket": "radio-nueva-esperanza-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:788316630070:android:c3123175a838fe26de3c97",
+        "android_client_info": {
+          "package_name": "com.example.radio_nueva_esperanza"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "788316630070-tkd3a4p5t9ugaousk4v0f3iaiqsn30a7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8Znxk1Vbcs_xIg-tqKJkGSIlXfEvGHTk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "788316630070-tkd3a4p5t9ugaousk4v0f3iaiqsn30a7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
