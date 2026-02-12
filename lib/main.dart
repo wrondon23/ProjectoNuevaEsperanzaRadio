@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:radio_nueva_esperanza/core/theme/app_theme.dart';
 import 'package:radio_nueva_esperanza/features/home/providers/radio_provider.dart';
 import 'package:radio_nueva_esperanza/features/home/screens/home_screen.dart';
+import 'package:radio_nueva_esperanza/features/home/providers/config_provider.dart';
 import 'package:radio_nueva_esperanza/data/services/audio_handler.dart';
 import 'package:audio_service/audio_service.dart';
 
@@ -11,6 +12,8 @@ import 'firebase_options.dart';
 import 'package:radio_nueva_esperanza/data/services/session_service.dart';
 
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:radio_nueva_esperanza/admin/main_admin.dart' show AdminApp;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,23 +51,27 @@ void main() async {
     print(stack);
   }
 
-  if (audioHandler != null) {
-    runApp(MyApp(audioHandler: audioHandler));
+  if (kIsWeb) {
+    // On Web, launch the Admin Panel
+    print("--- DEBUG: Launching Admin Panel (Web) ---");
+    runApp(const AdminApp());
   } else {
-    // If audio handler failed, we still want to show the app, maybe with a dummy handler or error state
-    // For now, let's try to run MyApp with a dummy/null handler if possible, or show explicit error.
-    // Given the architecture requires it, let's just show the error screen but allowing entry is better.
-    runApp(const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text(
-            "Error crítico al iniciar servicios.\nRevisa los logs.",
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.red, fontSize: 20),
+    // On Mobile/Desktop, launch the Radio App
+    if (audioHandler != null) {
+      runApp(MyApp(audioHandler: audioHandler));
+    } else {
+      runApp(const MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Text(
+              "Error crítico al iniciar servicios.\nRevisa los logs.",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.red, fontSize: 20),
+            ),
           ),
         ),
-      ),
-    ));
+      ));
+    }
   }
 }
 
@@ -78,13 +85,15 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => RadioProvider(audioHandler)),
+        ChangeNotifierProvider(create: (_) => ConfigProvider()..loadConfig()),
       ],
       child: MaterialApp(
         title: 'Radio Nueva Esperanza',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system,
+        themeMode:
+            ThemeMode.light, // Enforce light theme as per new design request
         home: const HomeScreen(),
       ),
     );

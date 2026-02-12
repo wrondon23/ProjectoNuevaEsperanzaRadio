@@ -1,28 +1,30 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Brand Colors (Updated for Dark Teal / Gold / Cream look)
-  static const Color primary = Color(0xFF003B46); // Deep Teal (Backgrounds)
-  static const Color secondary = Color(0xFFC5A065); // Gold / Metallic (Accents)
-  static const Color tertiary =
-      Color(0xFF66A5AD); // Lighter Teal (Secondary accents)
+  // New Modern Dark Theme Colors
 
   // Backgrounds
-  static const Color backgroundLight =
-      Color(0xFFFFFDE7); // Cream / Pale Yellow (Cards)
-  static const Color backgroundDark = Color(0xFF07575B); // Dark Teal (Scaffold)
+  static const Color background =
+      Color(0xFF101922); // Main Background (from HTML)
+  static const Color error = Color(0xFFFF3B30); // Red
+  static const Color cardBackground =
+      Color(0xFF16202a); // Card Background (Derived)
+  static const Color drawerBackground =
+      Color(0xFF101922); // Match Main Background
 
-  // Cards / Surface
-  static const Color surfaceLight = Color(0xFFFFFDE7); // Cream
-  static const Color surfaceDark = Color(0xFF003B46); // Deep Teal
+  // Accents & Borders
+  static const Color primary = Color(0xFF2B8CEE); // Electric Blue (from HTML)
+  static const Color secondary = Color(
+      0xFFD4AF37); // Gold (Keeping for "En Vivo" contrast if needed, or replace)
+  static const Color tertiary =
+      Color(0xFF66A5AD); // Keeping for legacy reference if needed
 
   // Text
-  static const Color textLight =
-      Color(0xFF003B46); // Deep Teal for light backgrounds
-  static const Color textDark = Color(0xFFFFFDE7); // Cream for dark backgrounds
+  static const Color textPrimary = Color(0xFFFFFFFF); // White
+  static const Color textSecondary = Color(0xFFA0A8B8); // Grey/Blue
 
   // Status
-  static const Color online = Color(0xFFC5A065); // Gold
-  static const Color offline = Color(0xFF9E9E9E); // Grey
-  static const Color buffering = Color(0xFF66A5AD); // Lighter Teal
+  static const Color online = Color(0xFFFF3B30); // Red for "LIVE" badge
+  static const Color offline = Color(0xFF9E9E9E);
+  static const Color buffering = Color(0xFF3399FF);
 }

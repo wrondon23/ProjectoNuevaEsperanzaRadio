@@ -1,5 +1,5 @@
 name: radio_nueva_esperanza
-description: Una aplicación de radio para la Iglesia Adventista Nueva Esperanza.
+description: Aplicación oficial de Radio Nueva Esperanza.
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -38,6 +38,11 @@ dependencies:
   sidebarx: ^0.17.1
   uuid: ^4.5.2
   shared_preferences: ^2.5.4
+  http: ^1.6.0
+  device_info_plus: ^12.3.0
+  carousel_slider: ^5.1.2
+  image_picker: ^1.2.1
+  image_picker_for_web: ^3.1.1
 
 dev_dependencies:
   flutter_test:

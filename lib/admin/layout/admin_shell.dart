@@ -3,6 +3,9 @@ import 'package:sidebarx/sidebarx.dart';
 import '../engine/metadata_registry.dart';
 import '../engine/crud_table_view.dart';
 import '../dashboard/dashboard_screen.dart';
+import '../dashboard/config_screen.dart';
+import '../banners/banners_screen.dart';
+import 'package:radio_nueva_esperanza/core/constants/app_colors.dart';
 
 class AdminShell extends StatefulWidget {
   const AdminShell({super.key});
@@ -26,7 +29,7 @@ class _AdminShellState extends State<AdminShell> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _key,
-      backgroundColor: const Color(0xFFF4F7F6),
+      backgroundColor: AppColors.background, // Dark Background
       drawer: AdminSidebar(controller: _controller), // Mobile drawer
       body: Row(
         children: [
@@ -56,7 +59,7 @@ class _AdminShellState extends State<AdminShell> {
     return Container(
       height: 60,
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppColors.drawerBackground, // Dark TopBar
         boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
       ),
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -72,7 +75,7 @@ class _AdminShellState extends State<AdminShell> {
             "Panel de Control",
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF142F30),
+                  color: Colors.white, // White Text
                 ),
           ),
           const Spacer(),
@@ -86,7 +89,7 @@ class _AdminShellState extends State<AdminShell> {
               width: 40,
               height: 40,
               errorBuilder: (context, error, stackTrace) {
-                return const Icon(Icons.person, color: Color(0xFF142F30));
+                return const Icon(Icons.person, color: Colors.white);
               },
             )),
           ),
@@ -110,7 +113,7 @@ class AdminSidebar extends StatelessWidget {
       theme: SidebarXTheme(
         margin: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: const Color(0xFF142F30),
+          color: AppColors.drawerBackground,
           borderRadius: BorderRadius.circular(20),
         ),
         textStyle: const TextStyle(color: Colors.white70),
@@ -123,10 +126,13 @@ class AdminSidebar extends StatelessWidget {
         selectedItemDecoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: const Color(0xFFFAAD8E).withOpacity(0.37),
+            color: AppColors.primary.withValues(alpha: 0.37),
           ),
-          gradient: const LinearGradient(
-            colors: [Color(0xFF1E3A3B), Color(0xFF142F30)],
+          gradient: LinearGradient(
+            colors: [
+              AppColors.primary.withValues(alpha: 0.1),
+              AppColors.primary.withValues(alpha: 0.2)
+            ],
           ),
           boxShadow: [
             BoxShadow(
@@ -140,14 +146,14 @@ class AdminSidebar extends StatelessWidget {
           size: 20,
         ),
         selectedIconTheme: const IconThemeData(
-          color: Color(0xFFFAAD8E),
+          color: AppColors.primary,
           size: 20,
         ),
       ),
       extendedTheme: const SidebarXTheme(
         width: 250,
         decoration: BoxDecoration(
-          color: Color(0xFF142F30),
+          color: AppColors.drawerBackground,
         ),
       ),
       headerBuilder: (context, extended) {
@@ -170,6 +176,8 @@ class AdminSidebar extends StatelessWidget {
       },
       items: [
         const SidebarXItem(icon: Icons.dashboard, label: 'Dashboard'),
+        const SidebarXItem(
+            icon: Icons.view_carousel, label: 'Banners'), // New Item
         // Dynamically map modules to sidebar items
         ...modules.map((m) => SidebarXItem(icon: m.icon, label: m.title)),
         const SidebarXItem(icon: Icons.settings, label: 'Configuración'),
@@ -190,18 +198,18 @@ class _Screens extends StatelessWidget {
       animation: controller,
       builder: (context, child) {
         if (controller.selectedIndex == 0) {
-          // Use USE_EMULATOR from main_admin if reachable, or just pass false for now to test compilation
-          // Better: We can check if we are in debug mode or use the const if we move it to a shared file.
-          // For now, let's assume we can import it or just use kDebugMode/kProfileMode if we wanted.
-          // Since I can't easily import main_admin.dart due to circular deps if main imports shell,
-          // I'll assume standard Flutter behavior.
-          // Let's import the dashboard screen first.
+          // Dashboard
           return const DashboardScreen(
               isEmulator: bool.fromEnvironment('USE_EMULATOR'));
         }
 
-        // Calculate module index (subtract 1 for Dashboard item)
-        final moduleIndex = controller.selectedIndex - 1;
+        if (controller.selectedIndex == 1) {
+          // Banners Screen
+          return const BannersScreen();
+        }
+
+        // Calculate module index (subtract 2 for Dashboard and Banners)
+        final moduleIndex = controller.selectedIndex - 2;
 
         if (moduleIndex >= 0 && moduleIndex < modules.length) {
           final module = modules[moduleIndex];
@@ -209,7 +217,7 @@ class _Screens extends StatelessWidget {
           return CrudTableView(module: module);
         }
 
-        return const Center(child: Text('Configuración / Otro'));
+        return const ConfigScreen();
       },
     );
   }

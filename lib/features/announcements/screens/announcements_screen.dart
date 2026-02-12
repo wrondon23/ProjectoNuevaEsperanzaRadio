@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:radio_nueva_esperanza/core/constants/app_colors.dart';
 import 'package:radio_nueva_esperanza/data/models/announcement_model.dart';
 import 'package:radio_nueva_esperanza/data/repositories/data_repository.dart';
 
@@ -50,32 +51,86 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
             itemBuilder: (context, index) {
               final item = snapshot.data![index];
               return Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                margin: const EdgeInsets.only(bottom: 16),
+                // Theme handles shape and elevation now due to global CardTheme
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        item.title,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
+                      if (item.imageUrl != null && item.imageUrl!.isNotEmpty)
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          height: 180,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            image: DecorationImage(
+                              image: NetworkImage(item.imageUrl!),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppColors.cardBackground,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: const Icon(Icons.campaign,
+                                color: AppColors.secondary), // Gold Icon
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              item.title,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize:
+                                        18, // Increased from default (~16)
+                                    color: AppColors.secondary, // Gold Title
+                                  ),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        item.date, // Format date if needed
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(color: Colors.grey),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          const Icon(Icons.calendar_today,
+                              size: 16, // Slightly larger icon
+                              color: AppColors.secondary),
+                          const SizedBox(width: 6),
+                          Text(
+                            item.date,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium // Changed from bodySmall
+                                ?.copyWith(
+                                    fontSize: 14, // Explicit size
+                                    color: AppColors.textPrimary,
+                                    fontWeight: FontWeight.w600),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      Text(item.description),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Divider(
+                            color:
+                                AppColors.textSecondary.withValues(alpha: 0.1)),
+                      ),
+                      Text(
+                        item.description,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontSize: 16, // Increased from default (~14)
+                            color:
+                                AppColors.textPrimary.withValues(alpha: 0.8)),
+                      ),
                     ],
                   ),
                 ),

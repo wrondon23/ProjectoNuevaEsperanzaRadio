@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'metadata_registry.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:typed_data';
+import 'package:uuid/uuid.dart';
+import 'package:radio_nueva_esperanza/core/constants/app_colors.dart';
 
 class CrudFormView extends StatefulWidget {
   final AdminModule module;
@@ -104,7 +109,8 @@ class _CrudFormViewState extends State<CrudFormView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(field.label,
-              style: const TextStyle(fontWeight: FontWeight.bold)),
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.white)),
           const SizedBox(height: 5),
           _buildInputWidget(field),
         ],
@@ -119,9 +125,16 @@ class _CrudFormViewState extends State<CrudFormView> {
         return TextFormField(
           initialValue: _formData[field.name]?.toString(),
           maxLines: field.type == FieldType.multiline ? 4 : 1,
+          style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey.shade800),
+            ),
+            filled: true,
+            fillColor: AppColors.drawerBackground,
             hintText: 'Ingrese ${field.label.toLowerCase()}',
+            hintStyle: TextStyle(color: Colors.grey.withOpacity(0.5)),
           ),
           validator: (value) {
             if (field.required && (value == null || value.isEmpty)) {
@@ -192,12 +205,121 @@ class _CrudFormViewState extends State<CrudFormView> {
         );
 
       case FieldType.image:
-        return const Card(
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text(
-                "Subida de Imágenes: Pendiente de implementación (Requiere Firebase Storage)"),
-          ),
+        return FormField<String>(
+          initialValue: _formData[field.name]?.toString(),
+          builder: (state) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (state.value != null && state.value!.isNotEmpty)
+                  Stack(
+                    alignment: Alignment.topRight,
+                    children: [
+                      Container(
+                        height: 200,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                          image: DecorationImage(
+                            image: NetworkImage(state.value!),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          state.didChange(null);
+                          _formData[field.name] = null;
+                        },
+                        icon: const CircleAvatar(
+                          backgroundColor: Colors.white,
+                          child: Icon(Icons.close, color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  Container(
+                    height: 200,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: AppColors.drawerBackground,
+                      border: Border.all(color: Colors.grey.shade800),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.add_photo_alternate,
+                              size: 50, color: Colors.grey.shade600),
+                          const SizedBox(height: 10),
+                          Text(
+                            "Subir Imagen",
+                            style: TextStyle(color: Colors.grey.shade500),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 10),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    final picker = ImagePicker();
+                    final XFile? image = await picker.pickImage(
+                      source: ImageSource.gallery,
+                      maxWidth: 1024,
+                      imageQuality: 80,
+                    );
+
+                    if (image != null) {
+                      // Upload Logic
+                      try {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Subiendo imagen...')),
+                        );
+
+                        final Uint8List fileBytes = await image.readAsBytes();
+                        final String uuid = const Uuid().v4();
+                        final String path =
+                            'uploads/$uuid.${image.name.split('.').last}';
+                        final Reference ref =
+                            FirebaseStorage.instance.ref().child(path);
+
+                        final metadata = SettableMetadata(
+                          customMetadata: {'picked-file-path': image.path},
+                        );
+
+                        // Timeout logic for upload
+                        final UploadTask uploadTask =
+                            ref.putData(fileBytes, metadata);
+                        final TaskSnapshot snapshot = await uploadTask.timeout(
+                            const Duration(seconds: 120), onTimeout: () {
+                          uploadTask.cancel();
+                          throw Exception("La subida tardó demasiado.");
+                        });
+
+                        final String downloadUrl =
+                            await snapshot.ref.getDownloadURL();
+
+                        state.didChange(downloadUrl);
+                        _formData[field.name] = downloadUrl;
+
+                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error al subir: $e')),
+                        );
+                      }
+                    }
+                  },
+                  icon: const Icon(Icons.upload),
+                  label: const Text("Seleccionar Imagen"),
+                ),
+              ],
+            );
+          },
         );
 
       default:

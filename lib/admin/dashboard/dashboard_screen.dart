@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import '../services/dashboard_service.dart';
+import 'live_sessions_table.dart';
 
 class DashboardScreen extends StatefulWidget {
   final bool isEmulator;
@@ -43,12 +44,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
               "Resumen de Actividad",
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF142F30),
+                    color: Colors.white,
                   ),
             ),
             Text(
               "Estadísticas en tiempo real",
-              style: TextStyle(color: Colors.grey.shade600),
+              style: TextStyle(color: Colors.grey.shade400),
             ),
           ],
         ),
@@ -111,12 +112,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth > 900) {
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          return Column(
             children: [
-              Expanded(flex: 2, child: _ActivityLineChart(service: _service)),
-              const SizedBox(width: 20),
-              Expanded(flex: 1, child: _CategoryPieChart()), // Mocked for now
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                      flex: 2, child: _ActivityLineChart(service: _service)),
+                  const SizedBox(width: 20),
+                  Expanded(flex: 1, child: _CategoryPieChart()),
+                ],
+              ),
+              const SizedBox(height: 20),
+              LiveSessionsTable(
+                  service: _service), // Nueva tabla de sesiones en vivo
             ],
           );
         } else {
@@ -125,6 +134,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               _ActivityLineChart(service: _service),
               const SizedBox(height: 20),
               _CategoryPieChart(),
+              const SizedBox(height: 20),
+              LiveSessionsTable(
+                  service: _service), // Nueva tabla de sesiones en vivo
             ],
           );
         }

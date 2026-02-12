@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'metadata_registry.dart';
+import 'package:radio_nueva_esperanza/core/constants/app_colors.dart';
 import 'crud_form_view.dart';
 
 class CrudTableView extends StatelessWidget {
@@ -21,7 +22,7 @@ class CrudTableView extends StatelessWidget {
               module.title,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF142F30),
+                    color: Colors.white,
                   ),
             ),
             ElevatedButton.icon(
@@ -48,10 +49,11 @@ class CrudTableView extends StatelessWidget {
         // Data Grid
         Expanded(
           child: Card(
+            color: AppColors.cardBackground,
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: Colors.grey.shade200),
+              side: BorderSide(color: Colors.grey.shade800),
             ),
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
@@ -73,11 +75,10 @@ class CrudTableView extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(module.icon,
-                            size: 60, color: Colors.grey.shade300),
+                        Icon(module.icon, size: 60, color: Colors.white54),
                         const SizedBox(height: 10),
                         Text('No hay ${module.title} registrados.',
-                            style: TextStyle(color: Colors.grey.shade500)),
+                            style: const TextStyle(color: Colors.white70)),
                       ],
                     ),
                   );
@@ -97,6 +98,8 @@ class CrudTableView extends StatelessWidget {
 
                     if (data.containsKey('title')) {
                       displayTitle = data['title'];
+                    } else if (data.containsKey('senderName')) {
+                      displayTitle = data['senderName'];
                     } else if (data.containsKey('name')) {
                       displayTitle = data['name'];
                     } else if (data.containsKey('content')) {
@@ -118,13 +121,50 @@ class CrudTableView extends StatelessWidget {
                     }
 
                     return ListTile(
+                      onTap: () {
+                        if (module.id == 'oracion') {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('Pedido de $displayTitle'),
+                              content: SingleChildScrollView(
+                                child: ListBody(
+                                  children: [
+                                    const Text('Contenido:',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                    const SizedBox(height: 5),
+                                    Text(data['content'] ?? ''),
+                                    const SizedBox(height: 15),
+                                    const Text('Fecha:',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                    const SizedBox(height: 5),
+                                    Text(subtitle),
+                                  ],
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: const Text('Cerrar'),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      },
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 5),
                       title: Text(displayTitle,
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white)),
                       subtitle: subtitle.isNotEmpty
-                          ? Text(subtitle)
-                          : Text('ID: $id'),
+                          ? Text(subtitle,
+                              style: const TextStyle(color: Colors.white70))
+                          : Text('ID: $id',
+                              style: const TextStyle(color: Colors.white38)),
                       leading: CircleAvatar(
                         backgroundColor:
                             Theme.of(context).primaryColor.withOpacity(0.1),

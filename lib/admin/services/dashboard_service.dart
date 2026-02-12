@@ -69,14 +69,24 @@ class DashboardService {
 
   // Get active sessions count (active in last 10 minutes)
   Stream<int> getActiveSessionsCount() {
-    // 10 minutes ago
     final cutoff = DateTime.now().subtract(const Duration(minutes: 10));
-
     return _db
-        .collection('sessions')
-        .where('lastActive', isGreaterThan: Timestamp.fromDate(cutoff))
+        .collection('active_sessions')
+        .where('last_seen', isGreaterThan: Timestamp.fromDate(cutoff))
         .snapshots()
         .map((snapshot) => snapshot.size);
+  }
+
+  // Get list of active sessions for table
+  Stream<List<Map<String, dynamic>>> getActiveSessions() {
+    final cutoff = DateTime.now().subtract(const Duration(minutes: 10));
+    return _db
+        .collection('active_sessions')
+        .where('last_seen', isGreaterThan: Timestamp.fromDate(cutoff))
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) => doc.data()).toList();
+    });
   }
 
   // Seed sample data for emulators
@@ -115,10 +125,32 @@ class DashboardService {
     for (int i = 0; i < 8; i++) {
       final ref = _db.collection('conferences').doc();
       batch.set(ref, {
-        'title': 'Conferencia ${i + 1}',
-        'speaker': 'Pr. Invitado',
         'createdAt': Timestamp.fromDate(now.subtract(Duration(days: i % 7))),
         'type': i % 2 == 0 ? 'Salud' : 'Espiritual',
+      });
+    }
+
+    // 4. Active Sessions (Simulated)
+    final countries = ['Mexico', 'Republica Dominicana', 'Colombia', 'USA'];
+    final cities = {
+      'Mexico': ['CDMX', 'Guadalajara', 'Monterrey'],
+      'Republica Dominicana': ['Santo Domingo', 'Santiago', 'La Romana'],
+      'Colombia': ['Bogota', 'Medellin', 'Cali'],
+      'USA': ['New York', 'Miami', 'Los Angeles']
+    };
+
+    for (int i = 0; i < 20; i++) {
+      final ref = _db.collection('active_sessions').doc();
+      final country = countries[i % countries.length];
+      final cityList = cities[country]!;
+      final city = cityList[i % cityList.length];
+
+      batch.set(ref, {
+        'last_seen': FieldValue.serverTimestamp(),
+        'country': country,
+        'city': city,
+        'platform': i % 2 == 0 ? 'Android' : 'iOS',
+        'is_online': true,
       });
     }
 

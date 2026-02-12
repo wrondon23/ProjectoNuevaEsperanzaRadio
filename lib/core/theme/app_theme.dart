@@ -3,69 +3,72 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:radio_nueva_esperanza/core/constants/app_colors.dart';
 
 class AppTheme {
-  static final ThemeData lightTheme = ThemeData(
-    useMaterial3: true,
-    brightness: Brightness.light,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: AppColors.primary,
-      brightness: Brightness.light,
-      primary: AppColors.primary,
-      onPrimary: AppColors.surfaceLight, // Text on primary
-      secondary: AppColors.secondary,
-      onSecondary: AppColors.primary, // Text on secondary
-      surface: AppColors.surfaceLight,
-      onSurface: AppColors.textLight,
-      tertiary: AppColors.tertiary,
-    ),
-    scaffoldBackgroundColor: AppColors.backgroundLight,
-    textTheme: GoogleFonts.outfitTextTheme(ThemeData.light().textTheme).apply(
-      bodyColor: AppColors.textLight,
-      displayColor: AppColors.textLight,
-    ),
-    appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.primary,
-      foregroundColor: AppColors.surfaceLight, // Icon/Text color
-      elevation: 0,
-      centerTitle: true,
-    ),
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: AppColors.surfaceLight,
-      selectedItemColor: AppColors.primary,
-      unselectedItemColor: Colors.grey,
-      type: BottomNavigationBarType.fixed,
-    ),
-  );
-
   static final ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.primary,
       brightness: Brightness.dark,
-      primary: AppColors.surfaceLight, // Inverted for dark mode contrast
-      onPrimary: AppColors.primary,
+      primary: AppColors.primary,
+      onPrimary: AppColors.textPrimary,
       secondary: AppColors.secondary,
-      onSecondary: AppColors.primary,
-      surface: AppColors.surfaceDark,
-      onSurface: AppColors.textDark,
-      tertiary: AppColors.tertiary,
+      onSecondary: AppColors.textPrimary,
+      surface: AppColors.cardBackground,
+      onSurface: AppColors.textPrimary,
     ),
-    scaffoldBackgroundColor: AppColors.backgroundDark,
-    textTheme: GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme).apply(
-      bodyColor: AppColors.textDark,
-      displayColor: AppColors.textDark,
+    scaffoldBackgroundColor: AppColors.background,
+    cardTheme: CardThemeData(
+      color: AppColors.cardBackground,
+      elevation: 4,
+      shadowColor: Colors.black.withValues(alpha: 0.3),
+      shape: RoundedRectangleBorder(
+          borderRadius:
+              BorderRadius.circular(20)), // Rounded corners as per request
+      margin: EdgeInsets.zero,
     ),
+    textTheme: GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme)
+        .copyWith(
+          displayLarge: const TextStyle(fontWeight: FontWeight.bold),
+          displayMedium: const TextStyle(fontWeight: FontWeight.bold),
+          headlineMedium: const TextStyle(fontWeight: FontWeight.w700),
+          titleLarge: const TextStyle(
+              fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+          bodyMedium: const TextStyle(color: AppColors.textPrimary),
+          bodySmall: const TextStyle(color: AppColors.textSecondary),
+        )
+        .apply(
+          bodyColor: AppColors.textPrimary,
+          displayColor: AppColors.textPrimary,
+        ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.surfaceDark,
-      foregroundColor: AppColors.surfaceLight,
+      backgroundColor: AppColors.drawerBackground,
+      foregroundColor: AppColors.textPrimary,
       elevation: 0,
       centerTitle: true,
+      titleTextStyle: TextStyle(
+          fontFamily: 'Outfit',
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: AppColors.textPrimary),
+      iconTheme: IconThemeData(color: AppColors.textPrimary),
+    ),
+    drawerTheme: const DrawerThemeData(
+      backgroundColor: AppColors.drawerBackground,
+      scrimColor: Colors.black54,
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: AppColors.surfaceDark,
-      selectedItemColor: AppColors.secondary,
-      unselectedItemColor: Colors.grey,
+      backgroundColor: AppColors.drawerBackground,
+      selectedItemColor: AppColors.primary, // Electric Blue
+      unselectedItemColor: AppColors.textSecondary,
       type: BottomNavigationBarType.fixed,
+      selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
     ),
   );
+
+  // We are forcing Dark Theme now, so Light Theme maps to Dark or is removed.
+  // For safety, we make lightTheme point to darkTheme or a light variation if strictly needed.
+  // Given the request "change the look", we'll just align both to the new design system or keep standard light.
+  // User asked for specific look (Dark), so we'll standardize on Dark for now or updated Light.
+  // Let's update Light to match new brand colors if they toggle it, but preferably app should be Dark.
+  static final ThemeData lightTheme = darkTheme;
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:google_fonts/google_fonts.dart';
 import 'package:radio_nueva_esperanza/core/constants/app_colors.dart';
 import 'package:radio_nueva_esperanza/data/models/activity_model.dart';
 import 'package:radio_nueva_esperanza/data/repositories/data_repository.dart';
@@ -24,14 +25,10 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundDark,
+      // backgroundColor: AppColors.backgroundDark, // REMOVED
       appBar: AppBar(
-        title: const Text('Actividades',
-            style: TextStyle(color: AppColors.textDark)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+        title: const Text('Actividades'),
         centerTitle: true,
-        iconTheme: const IconThemeData(color: AppColors.textDark),
       ),
       body: FutureBuilder<List<ActivityModel>>(
         future: _activitiesFuture,
@@ -42,7 +39,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           } else if (snapshot.hasError) {
             return Center(
                 child: Text('Error: ${snapshot.error}',
-                    style: const TextStyle(color: AppColors.textDark)));
+                    style: const TextStyle(color: AppColors.textPrimary)));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(
               child: Column(
@@ -51,7 +48,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   Icon(Icons.event, size: 64, color: Colors.grey),
                   SizedBox(height: 16),
                   Text('No hay actividades programadas',
-                      style: TextStyle(color: AppColors.textDark)),
+                      style: TextStyle(
+                          fontSize: 14, color: AppColors.textPrimary)),
                 ],
               ),
             );
@@ -63,11 +61,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             itemBuilder: (context, index) {
               final item = snapshot.data![index];
               return Card(
-                elevation: 4,
                 margin: const EdgeInsets.only(bottom: 16),
-                color: AppColors.surfaceLight, // Cream Card
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
+                // Theme handles shape and elevation
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -78,20 +73,19 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(8),
+                              color: AppColors.cardBackground,
+                              borderRadius: BorderRadius.circular(16),
                             ),
                             child: const Icon(Icons.event_note,
-                                color: AppColors.primary),
+                                color: AppColors.secondary), // Gold Icon
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
                               item.title,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                                color: AppColors.textLight, // Dark Teal Text
+                              style: GoogleFonts.outfit(
+                                fontStyle: FontStyle.italic,
+                                color: AppColors.textPrimary, // Dark Text
                               ),
                             ),
                           ),
@@ -101,13 +95,15 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                       Row(
                         children: [
                           const Icon(Icons.calendar_month,
-                              size: 16, color: AppColors.secondary),
+                              size: 18, // Increased from 16
+                              color: AppColors.secondary),
                           const SizedBox(width: 4),
                           Text(
                             item.date,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: AppColors.textLight,
+                              fontSize: 16, // Explicit size added
+                              color: AppColors.textSecondary,
                             ),
                           ),
                         ],
@@ -121,14 +117,15 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                             const SizedBox(width: 4),
                             Text("📍 ${item.location}",
                                 style: const TextStyle(
-                                    color: AppColors.textLight)),
+                                    color: AppColors.textPrimary)), // Dark Text
                           ],
                         ),
-                      const Divider(height: 24, color: Colors.grey),
+                      Divider(color: AppColors.textSecondary.withOpacity(0.1)),
                       Text(
                         item.description,
                         style: TextStyle(
-                          color: AppColors.textLight.withValues(alpha: 0.8),
+                          color: AppColors.textPrimary.withOpacity(0.8),
+                          fontSize: 16, // Increased from default (~14)
                           height: 1.4,
                         ),
                       ),

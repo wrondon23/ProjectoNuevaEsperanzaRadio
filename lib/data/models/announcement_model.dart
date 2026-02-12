@@ -46,4 +46,13 @@ class AnnouncementModel {
       imageUrl: data['imageUrl'] as String?,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'date': date,
+      'description': description,
+      'imageUrl': imageUrl,
+    };
+  }
 }

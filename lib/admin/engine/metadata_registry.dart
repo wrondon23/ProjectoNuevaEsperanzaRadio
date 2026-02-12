@@ -64,6 +64,10 @@ class MetadataRegistry {
             label: 'Descripción',
             type: FieldType.multiline),
         FieldConfig(name: 'date', label: 'Fecha', type: FieldType.date),
+        FieldConfig(
+            name: 'imageUrl',
+            label: 'Imagen de Cabecera',
+            type: FieldType.image),
       ],
     ));
 
@@ -126,6 +130,57 @@ class MetadataRegistry {
             name: 'facebookUrl', label: 'URL Facebook', type: FieldType.text),
         FieldConfig(
             name: 'youtubeUrl', label: 'URL YouTube', type: FieldType.text),
+      ],
+    ));
+
+    register(const AdminModule(
+      id: 'sermones',
+      title: 'Sermones',
+      icon: Icons.podcasts,
+      collectionPath: 'podcasts',
+      fields: [
+        FieldConfig(
+            name: 'title',
+            label: 'Título',
+            type: FieldType.text,
+            required: true),
+        FieldConfig(
+            name: 'speaker',
+            label: 'Predicador',
+            type: FieldType.text,
+            required: true),
+        FieldConfig(
+            name: 'description',
+            label: 'Descripción',
+            type: FieldType.multiline),
+        FieldConfig(
+            name: 'audioUrl',
+            label: 'URL del Audio',
+            type: FieldType.text,
+            required: true),
+        FieldConfig(
+            name: 'date', label: 'Fecha', type: FieldType.date, required: true),
+      ],
+    ));
+
+    register(const AdminModule(
+      id: 'oracion',
+      title: 'Pedidos de Oración',
+      icon: Icons.volunteer_activism,
+      collectionPath: 'prayer_requests',
+      fields: [
+        FieldConfig(
+            name: 'senderName',
+            label: 'Nombre',
+            type: FieldType.text,
+            required: true),
+        FieldConfig(
+            name: 'content',
+            label: 'Pedido',
+            type: FieldType.multiline,
+            required: true),
+        FieldConfig(name: 'date', label: 'Fecha', type: FieldType.date),
+        FieldConfig(name: 'isRead', label: 'Leído', type: FieldType.toggle),
       ],
     ));
   }

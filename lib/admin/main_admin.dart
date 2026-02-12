@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'package:google_fonts/google_fonts.dart';
+import 'package:radio_nueva_esperanza/core/theme/app_theme.dart';
 import 'layout/admin_shell.dart';
 import 'auth/login_screen.dart';
 import '../firebase_options.dart';
@@ -39,28 +39,8 @@ class AdminApp extends StatelessWidget {
     return MaterialApp(
       title: 'Radio Nueva Esperanza - Admin',
       debugShowCheckedModeBanner: false,
-      theme: _buildAdminTheme(),
-      // AuthGuard handles the redirection between Login and Dashboard
+      theme: AppTheme.darkTheme,
       home: const AuthGuard(),
-    );
-  }
-
-  ThemeData _buildAdminTheme() {
-    return ThemeData.light().copyWith(
-      scaffoldBackgroundColor:
-          const Color(0xFFF4F7F6), // Light Grey (AdminDek style)
-      primaryColor: const Color(0xFF142F30), // Dark Green
-      colorScheme: const ColorScheme.light(
-        primary: Color(0xFF142F30),
-        secondary: Color(0xFFFAAD8E), // Salmon
-        tertiary: Color(0xFF4DB6AC), // Teal
-      ),
-      textTheme: GoogleFonts.poppinsTextTheme(),
-      cardTheme: CardThemeData(
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        color: Colors.white,
-      ),
     );
   }
 }
@@ -70,9 +50,6 @@ class AuthGuard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // If Firebase is not initialized, we might get an error here.
-    // In a real scenario, we'd handle that.
-    // For this delivery, we assume the user will configure Firebase.
     try {
       return StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
@@ -90,7 +67,6 @@ class AuthGuard extends StatelessWidget {
         },
       );
     } catch (e) {
-      // Fallback if Firebase is not initialized (for UI preview)
       return const LoginScreen();
     }
   }

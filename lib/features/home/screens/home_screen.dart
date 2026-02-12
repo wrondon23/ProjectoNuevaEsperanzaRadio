@@ -4,7 +4,12 @@ import 'package:radio_nueva_esperanza/core/constants/app_colors.dart';
 import 'package:radio_nueva_esperanza/features/about/screens/about_screen.dart';
 import 'package:radio_nueva_esperanza/features/activities/screens/activities_screen.dart';
 import 'package:radio_nueva_esperanza/features/announcements/screens/announcements_screen.dart';
-import 'package:radio_nueva_esperanza/features/home/providers/radio_provider.dart';
+import 'package:radio_nueva_esperanza/features/podcasts/screens/podcasts_screen.dart';
+import 'package:radio_nueva_esperanza/features/prayer/screens/prayer_request_screen.dart';
+import 'package:radio_nueva_esperanza/features/bible/screens/daily_verse_screen.dart';
+import 'package:radio_nueva_esperanza/features/home/widgets/radio_player_view.dart';
+import 'package:radio_nueva_esperanza/features/home/providers/config_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,170 +19,303 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [
-    const RadioPlayerView(),
-    const AnnouncementsScreen(),
-    const ActivitiesScreen(),
-    const AboutScreen(),
-  ];
-
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: _screens[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.radio),
-            label: 'Radio',
+  void initState() {
+    super.initState();
+  }
+
+  void _onBottomNavTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  void _navigateToDrawerItem(
+      BuildContext context, String title, Widget widget) {
+    // If opening from Drawer, pop the drawer first
+    if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
+      Navigator.pop(context);
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          appBar: AppBar(
+            title: Text(title),
+            centerTitle: true,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.campaign),
-            label: 'Anuncios',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
-            label: 'Actividades',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.info),
-            label: 'Nosotros',
-          ),
-        ],
+          body: widget,
+        ),
       ),
     );
   }
-}
 
-class RadioPlayerView extends StatelessWidget {
-  const RadioPlayerView({super.key});
+  Future<void> _launchUrl(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      debugPrint("Could not launch $url");
+    }
+  }
+
+  // Custom navigation handler for RadioPlayerView quick actions
+  void _handlePlayerNavigation(int actionIndex) {
+    if (!mounted) return;
+
+    // 4: Podcasts -> Navigate to Podcasts Screen directly
+    if (actionIndex == 4) {
+      final config = Provider.of<ConfigProvider>(context, listen: false).config;
+      if (config?.activeSections['podcasts'] == true) {
+        _navigateToDrawerItem(context, 'Sermones', const PodcastsScreen());
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text("Esta sección no está activa currently.")),
+        );
+      }
+      return;
+    }
+
+    // Calculate target index based on config
+    final config = Provider.of<ConfigProvider>(context, listen: false).config;
+    if (config == null) return;
+
+    int targetIndex = -1;
+    int currentNavIndex = 0; // Radio starts at 0
+
+    // Check sections in the exact order they are added to bottomNavScreens
+
+    // 1. Anuncios
+    if (config.activeSections['announcements'] == true) {
+      currentNavIndex++;
+      if (actionIndex == 1) targetIndex = currentNavIndex;
+    }
+
+    // 2. Actividades
+    if (config.activeSections['activities'] == true) {
+      currentNavIndex++;
+      if (actionIndex == 2) targetIndex = currentNavIndex;
+    }
+
+    // 3. Oración
+    if (config.activeSections['prayer_requests'] == true) {
+      currentNavIndex++;
+      if (actionIndex == 3) targetIndex = currentNavIndex;
+    }
+
+    // 5. Palabra (Daily Verse)
+    if (config.activeSections['daily_verse'] == true) {
+      currentNavIndex++;
+      if (actionIndex == 5) targetIndex = currentNavIndex;
+    }
+
+    if (targetIndex != -1 && targetIndex != _currentIndex) {
+      setState(() => _currentIndex = targetIndex);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final configProvider = Provider.of<ConfigProvider>(context);
+    final _config = configProvider.config;
+
+    if (configProvider.isLoading) {
+      return const Scaffold(
+        body: Center(
+            child: CircularProgressIndicator(color: AppColors.secondary)),
+      );
+    }
+
+    // 1. Bottom Navigation Items (Main Sections)
+    final bottomNavScreens = <Map<String, dynamic>>[
+      {
+        'title': _config?.stationName.isNotEmpty == true
+            ? _config!.stationName
+            : 'Radio Nueva Esperanza',
+        'widget': RadioPlayerView(onNavigate: _handlePlayerNavigation),
+        'icon': Icons.radio,
+        'label': 'Radio',
+      }
+    ];
+
+    if (_config?.activeSections['announcements'] == true) {
+      bottomNavScreens.add({
+        'title': 'Anuncios',
+        'widget': const AnnouncementsScreen(),
+        'icon': Icons.campaign,
+        'label': 'Anuncios',
+      });
+    }
+
+    if (_config?.activeSections['activities'] == true) {
+      bottomNavScreens.add({
+        'title': 'Actividades',
+        'widget': const ActivitiesScreen(),
+        'icon': Icons.calendar_month,
+        'label': 'Actividades',
+      });
+    }
+
+    if (_config?.activeSections['prayer_requests'] == true) {
+      bottomNavScreens.add({
+        'title': 'Oración',
+        'widget': const PrayerRequestScreen(),
+        'icon': Icons.volunteer_activism,
+        'label': 'Oración',
+      });
+    }
+
+    if (_config?.activeSections['daily_verse'] == true) {
+      bottomNavScreens.add({
+        'title': 'Palabra',
+        'widget': const DailyVerseScreen(),
+        'icon': Icons.auto_stories,
+        'label': 'Palabra',
+      });
+    }
+
+    // 2. Drawer Items (Secondary Sections)
+    final drawerScreens = <Map<String, dynamic>>[];
+
+    if (_config?.activeSections['podcasts'] == true) {
+      drawerScreens.add({
+        'title': 'Sermones',
+        'widget': const PodcastsScreen(),
+        'icon': Icons.podcasts,
+        'label': 'Sermones',
+      });
+    }
+
+    if (_config?.activeSections['about'] == true) {
+      drawerScreens.add({
+        'title': 'Quiénes Somos',
+        'widget': const AboutScreen(),
+        'icon': Icons.info,
+        'label': 'Nosotros',
+      });
+    }
+
+    // Safety check
+    if (_currentIndex >= bottomNavScreens.length) {
+      _currentIndex = 0;
+    }
+
+    final currentScreen = bottomNavScreens[_currentIndex];
+    final isRadioTab = _currentIndex == 0;
+
     return Scaffold(
-      backgroundColor: AppColors.backgroundDark, // Force dark background
-      appBar: AppBar(
-        title: const Text('Radio Nueva Esperanza',
-            style: TextStyle(color: AppColors.textDark)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              AppColors.backgroundDark,
-              AppColors.primary.withValues(alpha: 0.8),
-            ],
-          ),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Logo / Cover Art
-              Container(
-                width: 250,
-                height: 250,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.5),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                  // Remove solid white background to blend better if logo has none
-                  // or keep it if logo needs it. Let's make it dark teal surface.
-                  color: AppColors.surfaceDark,
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
-                  child: Image.asset(
-                    'assets/icon/app_icon.png',
-                    width: 250,
-                    height: 250,
-                    fit: BoxFit.cover,
+      key: _scaffoldKey,
+      extendBodyBehindAppBar: isRadioTab, // Extend for full screen radio
+      appBar: isRadioTab
+          ? null
+          : AppBar(
+              title: Text(currentScreen['title'] as String),
+              centerTitle: true,
+            ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: const BoxDecoration(
+                color: AppColors.drawerBackground,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.radio,
+                    size: 60,
+                    color: AppColors.secondary,
                   ),
-                ),
-              ),
-              const SizedBox(height: 60),
-
-              // Status Indicator
-              Consumer<RadioProvider>(
-                builder: (context, provider, child) {
-                  return Column(
-                    children: [
-                      Text(
-                        provider.isPlaying ? "En Vivo" : "Detenido",
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: AppColors.secondary, // Gold
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1.2,
-                                ),
-                      ),
-                      const SizedBox(height: 30),
-                      if (provider.isLoading)
-                        const CircularProgressIndicator(
-                            color: AppColors.secondary)
-                      else
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color:
-                                    AppColors.secondary.withValues(alpha: 0.4),
-                                blurRadius: 20,
-                                spreadRadius: 5,
-                              ),
-                            ],
-                          ),
-                          child: FloatingActionButton.large(
-                            onPressed: provider.togglePlay,
-                            backgroundColor: AppColors.secondary, // Gold Button
-                            elevation: 0,
-                            shape: const CircleBorder(),
-                            child: Icon(
-                              provider.isPlaying
-                                  ? Icons.pause_rounded
-                                  : Icons.play_arrow_rounded,
-                              size: 60,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                    ],
-                  );
-                },
-              ),
-              const SizedBox(height: 30),
-
-              // Now Playing / Metadata (Placeholder)
-              Text(
-                "Transmitiendo Bendición",
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: AppColors.textDark, // Cream text
-                      fontWeight: FontWeight.w300,
+                  const SizedBox(height: 10),
+                  Text(
+                    _config?.stationName.isNotEmpty == true
+                        ? _config!.stationName
+                        : 'Radio Nueva Esperanza',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    '© 2024 Iglesia Adventista Nueva Esperanza',
+                    style: TextStyle(
+                      color: AppColors.textSecondary.withValues(alpha: 0.6),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            // Drawer items behave as buttons to push new screens
+            ...drawerScreens.map((screen) {
+              return ListTile(
+                leading: Icon(screen['icon'] as IconData, color: Colors.grey),
+                title: Text(
+                  screen['label'] as String,
+                  style: const TextStyle(color: AppColors.textPrimary),
+                ),
+                onTap: () => _navigateToDrawerItem(
+                  context,
+                  screen['title'] as String,
+                  screen['widget'] as Widget,
+                ),
+              );
+            }),
+            const Divider(),
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text("Síguenos",
+                  style: TextStyle(
+                      color: Colors.grey, fontWeight: FontWeight.bold)),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.facebook, color: Colors.blue),
+                  onPressed: () =>
+                      _launchUrl('https://facebook.com/IglesiaAdventista'),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.video_library, color: Colors.red),
+                  onPressed: () =>
+                      _launchUrl('https://youtube.com/IglesiaAdventista'),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.public, color: Colors.green),
+                  onPressed: () =>
+                      _launchUrl('https://radionuevaesperanza.com'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+          ],
         ),
       ),
+      body: currentScreen['widget'] as Widget,
+      bottomNavigationBar: isRadioTab
+          ? null
+          : BottomNavigationBar(
+              type: BottomNavigationBarType.fixed, // Ensure buttons don't shift
+              currentIndex: _currentIndex,
+              onTap: _onBottomNavTapped,
+              selectedItemColor: AppColors.primary,
+              unselectedItemColor: Colors.grey,
+              items: bottomNavScreens.map((screen) {
+                return BottomNavigationBarItem(
+                  icon: Icon(screen['icon'] as IconData),
+                  label: screen['label'] as String,
+                );
+              }).toList(),
+            ),
     );
   }
 }
