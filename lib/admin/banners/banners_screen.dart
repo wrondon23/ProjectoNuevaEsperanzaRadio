@@ -114,9 +114,9 @@ class _BannersScreenState extends State<BannersScreen> {
                         color: Colors.white,
                       ),
                 ),
-                Text(
+                const Text(
                   "Sube imágenes para el carrusel de la App (Máx recomendado: 5)",
-                  style: const TextStyle(color: AppColors.textSecondary),
+                  style: TextStyle(color: AppColors.textSecondary),
                 ),
               ],
             ),
@@ -246,7 +246,7 @@ class _BannersScreenState extends State<BannersScreen> {
                             onChanged: (val) {
                               _bannerService.toggleActive(banner.id, val);
                             },
-                            activeColor: Colors.teal,
+                            activeThumbColor: Colors.teal,
                           ),
                         ),
                         Positioned(

@@ -69,7 +69,7 @@ class DataRepository {
           .set(config.toMap(), SetOptions(merge: true));
     } catch (e) {
       print("Error saving config to Firestore: $e");
-      throw e;
+      rethrow;
     }
   }
 
@@ -95,7 +95,7 @@ class DataRepository {
       await _firestore.collection('prayer_requests').add(request.toMap());
     } catch (e) {
       print("Error sending prayer request: $e");
-      throw e;
+      rethrow;
     }
   }
 }

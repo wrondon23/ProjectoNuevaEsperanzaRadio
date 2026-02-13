@@ -63,21 +63,29 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: GoogleFonts.poppins(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF142F30),
+                    color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 10),
                 Text(
                   "Inicia sesión para gestionar el contenido",
-                  style: TextStyle(color: Colors.grey[600]),
+                  style: TextStyle(color: Colors.white70),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 40),
                 TextField(
                   controller: _emailController,
+                  style: const TextStyle(color: Colors.white),
                   decoration: const InputDecoration(
                     labelText: "Correo Electrónico",
-                    prefixIcon: Icon(Icons.email),
+                    labelStyle: TextStyle(color: Colors.white70),
+                    prefixIcon: Icon(Icons.email, color: Colors.white70),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white24),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -85,9 +93,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextField(
                   controller: _passwordController,
                   obscureText: true,
+                  style: const TextStyle(color: Colors.white),
                   decoration: const InputDecoration(
                     labelText: "Contraseña",
-                    prefixIcon: Icon(Icons.lock),
+                    labelStyle: TextStyle(color: Colors.white70),
+                    prefixIcon: Icon(Icons.lock, color: Colors.white70),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white24),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -97,7 +113,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.only(bottom: 20),
                     child: Text(
                       _errorMessage!,
-                      style: const TextStyle(color: Colors.red),
+                      style: const TextStyle(
+                          color: Color(0xFFFF3B30)), // Bright Red for error
                     ),
                   ),
                 SizedBox(

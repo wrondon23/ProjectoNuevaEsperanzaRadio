@@ -160,7 +160,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
                       'Si activas esto, la app mostrará una pantalla de mantenimiento a los usuarios.',
                       style: TextStyle(color: Colors.white70)),
                   value: _config.isMaintenanceMode,
-                  activeColor: Colors.red,
+                  activeThumbColor: Colors.red,
                   onChanged: (val) {
                     setState(() {
                       _config = _config.copyWith(isMaintenanceMode: val);

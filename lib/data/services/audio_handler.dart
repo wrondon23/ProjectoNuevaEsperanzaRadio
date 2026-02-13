@@ -87,7 +87,7 @@ class MyAudioHandler extends BaseAudioHandler {
         if (title != null && title.isNotEmpty) {
           // Update MediaItem with new title
           final currentItem = mediaItem.value ??
-              MediaItem(id: _streamUrl, title: "Radio Nueva Esperanza");
+              const MediaItem(id: _streamUrl, title: "Radio Nueva Esperanza");
 
           mediaItem.add(currentItem.copyWith(
             title: title,

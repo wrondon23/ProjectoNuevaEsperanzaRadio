@@ -282,8 +282,9 @@ class _ActivityLineChart extends StatelessWidget {
                 stream: service
                     .getLast7DaysCounts('announcements'), // Example stream
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData)
+                  if (!snapshot.hasData) {
                     return const Center(child: CircularProgressIndicator());
+                  }
 
                   final data = snapshot.data!;
                   // Map data to FlSpots

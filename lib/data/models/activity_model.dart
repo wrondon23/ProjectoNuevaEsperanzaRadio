@@ -37,10 +37,12 @@ class ActivityModel {
     DateTime? start;
     DateTime? end;
 
-    if (data['startDate'] is Timestamp)
+    if (data['startDate'] is Timestamp) {
       start = (data['startDate'] as Timestamp).toDate();
-    if (data['endDate'] is Timestamp)
+    }
+    if (data['endDate'] is Timestamp) {
       end = (data['endDate'] as Timestamp).toDate();
+    }
 
     // Fallback for old data or if one is missing
     if (start == null && data['date'] is Timestamp) {

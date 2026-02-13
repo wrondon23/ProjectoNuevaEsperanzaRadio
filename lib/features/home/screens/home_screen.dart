@@ -120,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final configProvider = Provider.of<ConfigProvider>(context);
-    final _config = configProvider.config;
+    final config = configProvider.config;
 
     if (configProvider.isLoading) {
       return const Scaffold(
@@ -132,8 +132,8 @@ class _HomeScreenState extends State<HomeScreen> {
     // 1. Bottom Navigation Items (Main Sections)
     final bottomNavScreens = <Map<String, dynamic>>[
       {
-        'title': _config?.stationName.isNotEmpty == true
-            ? _config!.stationName
+        'title': config?.stationName.isNotEmpty == true
+            ? config!.stationName
             : 'Radio Nueva Esperanza',
         'widget': RadioPlayerView(onNavigate: _handlePlayerNavigation),
         'icon': Icons.radio,
@@ -141,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     ];
 
-    if (_config?.activeSections['announcements'] == true) {
+    if (config?.activeSections['announcements'] == true) {
       bottomNavScreens.add({
         'title': 'Anuncios',
         'widget': const AnnouncementsScreen(),
@@ -150,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
 
-    if (_config?.activeSections['activities'] == true) {
+    if (config?.activeSections['activities'] == true) {
       bottomNavScreens.add({
         'title': 'Actividades',
         'widget': const ActivitiesScreen(),
@@ -159,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
 
-    if (_config?.activeSections['prayer_requests'] == true) {
+    if (config?.activeSections['prayer_requests'] == true) {
       bottomNavScreens.add({
         'title': 'Oración',
         'widget': const PrayerRequestScreen(),
@@ -168,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
 
-    if (_config?.activeSections['daily_verse'] == true) {
+    if (config?.activeSections['daily_verse'] == true) {
       bottomNavScreens.add({
         'title': 'Palabra',
         'widget': const DailyVerseScreen(),
@@ -180,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // 2. Drawer Items (Secondary Sections)
     final drawerScreens = <Map<String, dynamic>>[];
 
-    if (_config?.activeSections['podcasts'] == true) {
+    if (config?.activeSections['podcasts'] == true) {
       drawerScreens.add({
         'title': 'Sermones',
         'widget': const PodcastsScreen(),
@@ -189,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
 
-    if (_config?.activeSections['about'] == true) {
+    if (config?.activeSections['about'] == true) {
       drawerScreens.add({
         'title': 'Quiénes Somos',
         'widget': const AboutScreen(),
@@ -233,8 +233,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    _config?.stationName.isNotEmpty == true
-                        ? _config!.stationName
+                    config?.stationName.isNotEmpty == true
+                        ? config!.stationName
                         : 'Radio Nueva Esperanza',
                     style: const TextStyle(
                       color: Colors.white,

@@ -166,8 +166,8 @@ class RadioPlayerView extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: ClipOval(
-                  child: const BannerCarousel(),
+                child: const ClipOval(
+                  child: BannerCarousel(),
                 ),
               ),
 
